@@ -53,7 +53,7 @@ def load_data(fname, data_grey=False):
     num_channels = 1 if data_grey else 3
     X_shape = (n, num_channels, size, size)
 
-    print 'Load test data from %s' % X_fname
+    print('Load test data from %s' % X_fname)
     X = np.memmap(X_fname, dtype=np.float32, mode='r', shape=X_shape)
 
     return X
@@ -80,22 +80,22 @@ if __name__ == '__main__':
     parser.add_argument('--pad', default=0, type=int, help='Padding of the bounding box')
     args = parser.parse_args()
 
-    print 'Loading model: %s' % args.model
+    print('Loading model: %s' % args.model)
     model = load_model(args.model)
     localization_net = model.net
     model_fname = model.model_fname[2:]  # Hack to remove the "./"
     localization_net.load_params_from(model_fname)
     localization_net.batch_iterator_train.batch_size = args.model_batch_size
     localization_net.batch_iterator_test.batch_size = args.model_batch_size
-    print
+    print()
 
-    print 'Loading data: %s' % args.data
+    print('Loading data: %s' % args.data)
     df = pd.read_csv('data/sample_submission.csv')
     X_test = load_data(args.data, args.data_grey)
-    print X_test.shape
-    print
+    print(X_test.shape)
+    print()
 
-    print 'Preparing output'
+    print('Preparing output')
     size_fname = '%s_pad%s' % (args.size, args.pad) if args.pad > 0 else str(args.size)
     if args.as_grey:
         X_fname = 'cache/X_test_cropped_grey_%s_%s_%s.npy' % (args.model, size_fname, get_current_date())
@@ -105,17 +105,17 @@ if __name__ == '__main__':
         X_shape = (len(df), 3, args.size, args.size)
 
     if os.path.exists(X_fname) and not args.overwrite:
-        print '%s exists. Use --overwrite' % X_fname
+        print('%s exists. Use --overwrite' % X_fname)
         sys.exit(1)
 
-    print 'Will write X_test_cropped to %s with shape of %s' % (X_fname, X_shape)
-    print
+    print('Will write X_test_cropped to %s with shape of %s' % (X_fname, X_shape))
+    print()
 
     X_fp = np.memmap(X_fname, dtype=np.float32, mode='w+', shape=X_shape)
 
-    print 'Predicting bounding boxes'
+    print('Predicting bounding boxes')
     test_bboxes_pred = localization_net.predict(X_test)
-    print
+    print()
 
     assert len(test_bboxes_pred) == len(X_fp)
 
@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
             X_fp[i] = cropped_img
             X_fp.flush()
-        except Exception, e:
-            print '%s has failed' % i
-            print e
-            print bbox_pred
+        except Exception as e:
+            print('%s has failed' % i)
+            print(e)
+            print(bbox_pred)

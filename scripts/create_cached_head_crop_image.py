@@ -40,8 +40,8 @@ if __name__ == '__main__':
     df = pd.read_csv('data/train_with_points.csv')
     df['exist'] = df['Image'].apply(check_if_image_exists)
 
-    print '%i does not exists' % (len(df) - df['exist'].sum())
-    print df[~df['exist']]
+    print('%i does not exists' % (len(df) - df['exist'].sum()))
+    print(df[~df['exist']])
 
     df = df[df['exist']]
     df = df.reset_index(drop=True)
@@ -64,18 +64,18 @@ if __name__ == '__main__':
     else:
         X_shape = (len(df), 3, args.size, args.size)
 
-    print X_shape, y_shape
+    print(X_shape, y_shape)
 
     if os.path.exists(X_fname) and not args.overwrite:
-        print '%s exists. Use --overwrite' % X_fname
+        print('%s exists. Use --overwrite' % X_fname)
         sys.exit(1)
 
     if os.path.exists(y_fname) and not args.overwrite:
-        print '%s exists. Use --overwrite' % y_fname
+        print('%s exists. Use --overwrite' % y_fname)
         sys.exit(1)
 
-    print 'Will write X to %s with shape of %s' % (X_fname, X_shape)
-    print 'Will write y to %s with shape of %s' % (y_fname, y_shape)
+    print('Will write X to %s with shape of %s' % (X_fname, X_shape))
+    print('Will write y to %s with shape of %s' % (y_fname, y_shape))
 
     # Use r+ instead of w+ when filling ing existing cache
     memmap_mode = 'w+' if args.idx is None else 'r+'
@@ -115,5 +115,5 @@ if __name__ == '__main__':
 
             X_fp.flush()
             y_fp.flush()
-        except Exception, e:
-            print '%s has failed' % i, e
+        except Exception as e:
+            print('%s has failed' % i, e)

@@ -255,6 +255,6 @@ def batch_norm2(layer, **kwargs):
         layer.b = None
     layer = BatchNormLayer(layer, **kwargs)
     if nonlinearity is not None:
-        from lasagne.layers.special import NonlinearityLayer
+        from lasagne.layers import NonlinearityLayer
         layer = NonlinearityLayer(layer, nonlinearity, name='%s_nl' % layer.name)
     return layer

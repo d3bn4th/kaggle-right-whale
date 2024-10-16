@@ -3,9 +3,9 @@ import logging
 
 import numpy as np
 
-from sklearn.cross_validation import ShuffleSplit
+from sklearn.model_selection import ShuffleSplit
 # from sklearn.cross_validation import StratifiedShuffleSplit
-from sklearn.cross_validation import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold
 
 
 class TrainSplit(object):

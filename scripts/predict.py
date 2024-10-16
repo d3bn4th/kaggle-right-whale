@@ -3,7 +3,7 @@ import importlib
 from time import strftime
 import numpy as np
 import pandas as pd
-import cPickle as pickle
+import pickle
 
 
 def load_data(fname):
@@ -37,41 +37,41 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     output_fname = 'submissions/%s.csv' % get_current_datetime()
-    print 'Will write output to %s' % output_fname
+    print('Will write output to %s' % output_fname)
     print
 
-    print 'Loading sample submission'
+    print('Loading sample submission')
     sample_df = pd.read_csv('data/sample_submission.csv')
     print
 
-    print 'Loading encoder'
+    print('Loading encoder')
     encoder = load_encoder()
     classes = map(lambda x: 'whale_%05d' % x, encoder.classes_)
 
-    print 'Loading model: %s' % args.model
+    print('Loading model: %s' % args.model)
     model = load_model(args.model)
     net = model.net
     net.initialize()
-    print 'Loading model weights from %s' % model.model_fname
+    print('Loading model weights from %s' % model.model_fname)
     net.load_weights_from(model.model_fname)
     print
 
-    print 'Loading data: %s' % args.data
+    print('Loading data: %s' % args.data)
     X = load_data(args.data)
     print
 
-    print 'Predicting...'
+    print('Predicting...')
     y_test_pred_proba = net.predict_proba(X)
     print
 
-    print 'Assembling final dataframe'
+    print('Assembling final dataframe')
     fnames = sample_df[['Image']].values
     values = np.hstack([fnames, y_test_pred_proba])
     submission_df = pd.DataFrame(values, columns=['Image'] + classes)
 
-    print submission_df.head(1)
-    print
-    print len(submission_df.columns)
-    print
+    print(submission_df.head(1))
+    print()
+    print(len(submission_df.columns))
+    print()
 
     submission_df.to_csv(output_fname, index=False)

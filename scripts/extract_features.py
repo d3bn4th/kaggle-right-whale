@@ -27,32 +27,32 @@ if __name__ == '__main__':
     parser.add_argument('--layer', required=True, help='Name of the layer')
     args = parser.parse_args()
 
-    print args
+    print(args)
 
     timestamp = get_current_datetime()
 
     data_name = os.path.splitext(os.path.basename(args.data))[0]
     feats_fname = 'model_features/%s_%s_%s.npy' % (args.model, args.layer, data_name)
-    print 'Will write to', feats_fname
+    print('Will write to', feats_fname)
 
-    print 'Loading data: %s' % args.data
+    print('Loading data: %s' % args.data)
     X = np.memmap(args.data, mode='r', dtype=np.float32)
     X = X.reshape(-1, 3, args.size, args.size)
-    print X.shape
-    print
+    print(X.shape)
+    print()
 
-    print 'Loading model: %s' % args.model
+    print('Loading model: %s' % args.model)
     model = load_model(args.model)
     net = model.net
     net.initialize()
-    print 'Loading model weights from %s' % model.model_fname
+    print('Loading model weights from %s' % model.model_fname)
     net.load_params_from(model.model_fname)
-    print
+    print()
 
-    print 'Extracting features from', args.layer
+    print('Extracting features from', args.layer)
     feats = net.transform(X, args.layer)
     feats = feats.squeeze()
-    print feats.shape
-    print
+    print(feats.shape)
+    print()
 
     np.save(feats_fname, feats)

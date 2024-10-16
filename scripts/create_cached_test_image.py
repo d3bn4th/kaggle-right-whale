@@ -37,7 +37,7 @@ if __name__ == '__main__':
     df = pd.read_csv('data/sample_submission.csv')
     df['exist'] = df['Image'].apply(check_if_image_exists)
 
-    print '%i does not exists' % (len(df) - df['exist'].sum())
+    print('%i does not exists' % (len(df) - df['exist'].sum()))
 
     df = df[df['exist']]
     df = df.reset_index(drop=True)
@@ -45,13 +45,13 @@ if __name__ == '__main__':
     X_fname = 'cache/X_test_%s_%s.npy' % (args.size, get_current_date())
     X_shape = (len(df), 3, args.size, args.size)
 
-    print X_shape
+    print(X_shape)
 
     if os.path.exists(X_fname) and not args.overwrite:
-        print '%s exists. Use --overwrite' % X_fname
+        print('%s exists. Use --overwrite' % X_fname)
         sys.exit(1)
 
-    print 'Will write X to %s with shape of %s' % (X_fname, X_shape)
+    print('Will write X to %s with shape of %s' % (X_fname, X_shape))
 
     X_fp = np.memmap(X_fname, dtype=np.float32, mode='w+', shape=X_shape)
 
@@ -70,4 +70,4 @@ if __name__ == '__main__':
             X_fp[i] = img
             X_fp.flush()
         except:
-            print '%s has failed' % i
+            print('%s has failed' % i)

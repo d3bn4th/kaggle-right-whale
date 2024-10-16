@@ -9,13 +9,13 @@ import theano
 import theano.tensor as T
 import numpy as np
 import matplotlib
-import cPickle as pickle
+import pickle
 matplotlib.use('Agg')
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
 from sklearn.metrics import log_loss
-from sklearn.cross_validation import ShuffleSplit, StratifiedShuffleSplit, StratifiedKFold
+from sklearn.model_selection import ShuffleSplit, StratifiedShuffleSplit, StratifiedKFold
 from sklearn.preprocessing import LabelEncoder
 
 
@@ -90,7 +90,7 @@ def load_model(fname):
 
 
 def load_encoder(fname='models/encoder.pkl'):
-    encoder = pickle.load(open(fname, 'r'))
+    encoder = pickle.load(open(fname, 'rb'))
     return encoder
 
 
@@ -112,17 +112,17 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # log_fname = 'logs/%s.log' % get_current_time()
-    # print 'Will write logs to %s' % log_fname
+    # print('Will write logs to %s' % log_fname)
 
-    print 'args'
-    print args
-    print
+    print('args')
+    print(args)
+    print()
 
-    print 'Loading model: %s' % args.model
+    print('Loading model: %s' % args.model)
     model = load_model(args.model)
     net = model.net
     net.initialize()
-    print
+    print()
 
     output_exists = any([
         os.path.exists(x) for x in [
@@ -130,90 +130,90 @@ if __name__ == '__main__':
         ]
     ])
     if output_exists and not args.overwrite:
-        print 'Model output exists. Use --overwrite'
+        print('Model output exists. Use --overwrite')
         sys.exit(1)
 
-    print 'Loading data: %s' % args.data
+    print('Loading data: %s' % args.data)
     X, y = load_data(args.data, args.use_cropped, args.as_grey)
-    print X.shape, y.shape
-    print
+    print(X.shape, y.shape)
+    print()
 
     # TODO exit if the shapes don't match image_size
 
     if args.min_occ is not None:
-        print 'Filtering dataset with min occurence of %i' % args.min_occ
+        print('Filtering dataset with min occurence of %i' % args.min_occ)
         X, y = filter_by_min_occ(X, y, args.min_occ)
-        print X.shape, y.shape
-        print 'WARNING: update the number of units at the final layer to %i' % np.unique(y).shape[0]
-        print
+        print(X.shape, y.shape)
+        print('WARNING: update the number of units at the final layer to %i' % np.unique(y).shape[0])
+        print()
 
-    print 'Loading encoder'
+    print('Loading encoder')
     encoder = load_encoder()
     # encoder = LabelEncoder().fit(y)
     y = encoder.transform(y).astype(np.int32)
-    print np.unique(y).shape[0]
-    print y.min(), y.max()
-    print
+    print(np.unique(y).shape[0])
+    print(y.min(), y.max())
+    print()
 
-    print 'Loading mean image'
+    print('Loading mean image')
     X_mean = load_mean(args.data, args.use_cropped, args.as_grey)
     if not args.no_mean and X_mean is not None:
         net.batch_iterator_train.mean = X_mean
         net.batch_iterator_test.mean = X_mean
-        print 'Injected mean image'
+        print('Injected mean image')
     else:
-        print 'Cannot load mean image'
-    print
+        print('Cannot load mean image')
+    print()
 
     if args.continue_training and os.path.exists(model.model_fname):
-        print 'Loading model params from %s' % model.model_fname
+        print('Loading model params from %s' % model.model_fname)
         net.load_params_from(model.model_fname)
-        with open(model.model_history_fname) as f:
+        with open(model.model_history_fname, 'rb') as f:
             net.train_history_ = pickle.load(f)
 
     if not args.no_test:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42, stratify=True)
 
-        print 'Train / Test set split'
-        print X_train.shape, X_train.dtype
-        print y_train.shape, y_train.dtype
-        print X_test.shape, y_train.dtype
-        print y_test.shape, y_test.dtype
-        print
-        print 'Training set images / label: min=%i, max=%i' % (
+        print('Train / Test set split')
+        print(X_train.shape, X_train.dtype)
+        print(y_train.shape, y_train.dtype)
+        print(X_test.shape, y_train.dtype)
+        print(y_test.shape, y_test.dtype)
+        print()
+        print('Training set images / label: min=%i, max=%i' % (
             np.bincount(y_train).min(), np.bincount(y_train).max()
-        )
-        print 'Test set images / label: min=%i, max=%i' % (
+        ))
+        print('Test set images / label: min=%i, max=%i' % (
             np.bincount(y_test).min(), np.bincount(y_test).max()
-        )
+        ))
 
         net.fit(X_train, y_train)
 
-        print 'Loading best param'
+        print('Loading best param')
         net.load_params_from(model.model_fname)
-        print
+        print()
 
-        print 'Evaluating on test set'
+        print('Evaluating on test set')
         y_test_pred = net.predict(X_test)
         y_test_pred_proba = net.predict_proba(X_test)
-        print
+        print()
 
-        print 'Classification Report'
-        print '====================='
-        print classification_report(y_test, y_test_pred)
-        print
+        print('Classification Report')
+        print('=====================')
+        print(classification_report(y_test, y_test_pred))
+        print()
 
-        print 'Accuracy Score'
-        print '=============='
+        print('Accuracy Score')
+        print('==============')
         score = accuracy_score(y_test, y_test_pred)
-        print '%.6f' % score
-        print
+        print('%.6f' % score)
+        print()
 
-        print 'Logloss'
-        print '======='
+        print('Logloss')
+        print('=======')
         logloss = log_loss(y_test, y_test_pred_proba)
-        print '%.6f' % logloss
-        print
+        print('%.6f' % logloss)
+        print()
 
     else:
         net.fit(X, y)

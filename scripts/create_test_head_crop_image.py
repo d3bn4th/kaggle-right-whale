@@ -54,7 +54,7 @@ def load_data(fname, data_grey=False):
     num_channels = 1 if data_grey else 3
     X_shape = (n, num_channels, size, size)
 
-    print 'Load test data from %s' % X_fname
+    print('Load test data from %s' % X_fname)
     X = np.memmap(X_fname, dtype=np.float32, mode='r', shape=X_shape)
 
     return X
@@ -81,22 +81,22 @@ if __name__ == '__main__':
     parser.add_argument('--tta', action='store_true')
     args = parser.parse_args()
 
-    print 'Loading model: %s' % args.model
+    print('Loading model: %s' % args.model)
     model = load_model(args.model)
     localization_net = model.net
     model_fname = model.model_fname[2:]  # Hack to remove the "./"
     localization_net.load_params_from(model_fname)
     localization_net.batch_iterator_train.batch_size = args.model_batch_size
     localization_net.batch_iterator_test.batch_size = args.model_batch_size
-    print
+    print()
 
-    print 'Loading data: %s' % args.data
+    print('Loading data: %s' % args.data)
     df = pd.read_csv('data/sample_submission.csv')
     X_test = load_data(args.data, args.data_grey)
-    print X_test.shape
-    print
+    print(X_test.shape)
+    print()
 
-    print 'Preparing output'
+    print('Preparing output')
     size_fname = str(args.size)
     tta_suffix = 'tta_' if args.tta else ''
     if args.as_grey:
@@ -111,17 +111,17 @@ if __name__ == '__main__':
         X_shape = (len(df), 3, args.size, args.size)
 
     if os.path.exists(X_fname) and not args.overwrite:
-        print '%s exists. Use --overwrite' % X_fname
+        print('%s exists. Use --overwrite' % X_fname)
         sys.exit(1)
 
-    print 'Will write X_test_cropped to %s with shape of %s' % (X_fname, X_shape)
-    print
+    print('Will write X_test_cropped to %s with shape of %s' % (X_fname, X_shape))
+    print()
 
     X_fp = np.memmap(X_fname, dtype=np.float32, mode='w+', shape=X_shape)
 
-    print 'Predicting points'
+    print('Predicting points')
     if args.tta:
-        print 'Using test time augmentation'
+        print('Using test time augmentation')
         scale_choices = [0.75, 1, 1.25]
         shear_choices = [-0.25, 0, 0.25]
         rotation_choices = [0, 45, 90, 135, 180, 225, 270, 315, 360]
@@ -137,7 +137,7 @@ if __name__ == '__main__':
         test_pts_pred = tta.predict(X_test)
     else:
         test_pts_pred = localization_net.predict(X_test)
-    print
+    print()
 
     assert len(test_pts_pred) == len(X_fp)
 
@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
             X_fp[i] = cropped_img
             X_fp.flush()
-        except Exception, e:
-            print '%s has failed' % i
-            print e
-            print pts
+        except Exception as e:
+            print('%s has failed' % i)
+            print(e)
+            print(pts)

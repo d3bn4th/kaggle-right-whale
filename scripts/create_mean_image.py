@@ -44,8 +44,8 @@ if __name__ == '__main__':
         X_fname = 'cache/X_%s.npy' % args.data
         mean_fname = 'cache/X_%s_mean.npy' % args.data
 
-    print 'Reading images from %s' % X_fname
-    print 'Will output mean to %s' % mean_fname
+    print('Reading images from %s' % X_fname)
+    print('Will output mean to %s' % mean_fname)
 
     n = 4543
     num_channels = 1 if args.as_grey else 3
@@ -54,4 +54,4 @@ if __name__ == '__main__':
     X_mean = X.mean(axis=0)
 
     np.save(mean_fname, X_mean)
-    print 'Done'
+    print('Done')

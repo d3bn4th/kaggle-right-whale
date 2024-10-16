@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    print args.submissions
+    print(args.submissions)
 
     dfs = [pd.read_csv(fname) for fname in args.submissions]
     all_probas = [df[df.columns[1:]].values for df in dfs]
@@ -26,10 +26,10 @@ if __name__ == '__main__':
 
     basenames = [os.path.splitext(os.path.basename(fname))[0] for fname in args.submissions]
     final_fname = 'submissions/' + '+'.join(basenames) + '.csv'
-    print final_fname
+    print(final_fname)
 
     if os.path.exists(final_fname):
-        print 'destination exists. aborting.'
+        print('destination exists. aborting.')
         sys.exit(1)
 
     df_final.to_csv(final_fname, index=False)
