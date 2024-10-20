@@ -31,7 +31,7 @@ class TestTimeAutgmentationPredictor(BaseEstimator):
             self.rotation_choices, self.translation_choices
         ))
 
-        print 'Number of combinations', len(tf_args)
+        print('Number of combinations', len(tf_args))
 
         X_probas = []
 
@@ -60,7 +60,7 @@ class TestTimeAutgmentationPtsPredictor(TestTimeAutgmentationPredictor):
             self.rotation_choices, self.translation_choices
         ))
 
-        print 'Number of combinations', len(tf_args)
+        print('Number of combinations', len(tf_args))
 
         all_pts = []
 
